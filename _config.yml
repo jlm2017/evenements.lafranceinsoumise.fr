@@ -1,0 +1,16 @@
+data_dir: data
+url: https://campagne.jlm2017.fr
+kramdown:
+   input: GFM
+   hard_wrap: false
+gems:
+  - jekyll-seo-tag
+
+twitter:
+  username: JLM_2017
+facebook:
+  publisher: https://www.facebook.com/JLM2017
+
+collections:
+  evenements:
+    output: true

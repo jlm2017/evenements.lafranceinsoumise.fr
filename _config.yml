@@ -1,5 +1,5 @@
 data_dir: data
-url: https://campagne.jlm2017.fr
+url: https://evenements.lafranceinsoumise.fr
 kramdown:
    input: GFM
    hard_wrap: false

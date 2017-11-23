@@ -7,9 +7,17 @@ gems:
   - jekyll-seo-tag
 
 twitter:
-  username: JLM_2017
+  username: FranceInsoumise
 facebook:
-  publisher: https://www.facebook.com/JLM2017
+  publisher: https://www.facebook.com/lafranceinsoumise/
+
+social:
+  name: La France insoumise
+  links:
+    - https://www.facebook.com/lafranceinsoumise/
+    - https://twitter.com/franceinsoumise
+
+lang: fr_FR
 
 collections:
   evenements:

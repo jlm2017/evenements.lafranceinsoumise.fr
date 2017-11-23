@@ -30,6 +30,180 @@ subject: Convention législatives
         <div class="col-md-6 bottom-margin"><a target="_blank" class="btn btn-lg btn-block" style="background-color:#4099FF;color: white;" href="https://twitter.com/intent/tweet?original_referer=https%3A%2F%2Fpublish.twitter.com%2F&ref_src=twsrc%5Etfw&related=franceinsoumise&text=Samedi%2025%20et%20dimanche%2026%20novembre%2C%20suivez%20en%20direct%20la%20troisième%20convention%20de%20la%20%40franceinsoumise.%20%23ConventionFi&tw_p=tweetbutton&url=https%3A%2F%2Fevenements.lafranceinsoumise.fr">PARTAGER SUR TWITTER</a></div>
       <br/><br/>
     </div>
+    <div id="participation" style="display: {% if site.data.hashtags.enabled %}block{% else %}none{%endif%};">
+    <h3>Je participe&nbsp;!</h3>
+
+    <div class="row">
+      <div class="col-md-8">
+        <div class="form-group">
+          <label for="contribution">Ma contribution</label>
+          <textarea class="form-control" rows="4" id="contribution" maxlength="280" data-toggle="popover"
+          data-content="Indiquez-ici votre contribution" title="Qu'avez-vous  dire ?" data-trigger="manual"
+          data-container="body"></textarea>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="form-group">
+          <label for="prenom">Mon prénom</label>
+          <input type="text" class="form-control" id="prenom" data-toggle="popover" title="Pas de prénom ?"
+                 data-content="Vous devez indiquez votre prénom !" data-trigger="manual" data-container="body">
+        </div>
+        <button class="btn btn-primary btn-block" id="envoyer" data-toggle="popover" data-trigger="manual" data-container="body">
+            Contribuer
+        </button>
+      </div>
+    </div>
+    <div class="form-inline">
+    <div class="form-group" id="hashtag-container" data-toggle="popover" title="Choisissez au moins un thème"
+     data-content="Ajoutez le hashtag avec un des boutons." data-trigger="manual" data-container="body">
+    </div>
+    </div>
+    </div>
+
+    <script>
+        function uuidv4() {
+            return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+            )
+        }
+
+        function hidePopovers() {
+          $('[data-toggle="popover"]').popover('hide');
+        }
+
+        function saveFirstName(e) {
+          localStorage.setItem('prenom', e.currentTarget.value);
+        }
+
+        function sendContribution(e) {
+            e.stopPropagation();
+            var prenom = prenomField.value.trim();
+            var contribution = contributionField.value.trim();
+
+            if (!prenom) {
+              $(prenomField).popover('show');
+              return;
+            }
+            if(!contribution) {
+              $(contributionField).popover('show');
+              return;
+            }
+
+            if (compulsory && !tags.some(function(t) { return contributionField.value.indexOf('#' + t) !== -1 })) {
+              $(hashtagContainer).popover('show');
+              return;
+            }
+
+            var message = {
+              id: contributerId,
+              name: prenom,
+              text: contribution,
+            };
+
+            sendButton.disabled = true;
+            sendButton.textContent = 'Envoi...';
+
+            var r = new XMLHttpRequest();
+
+            r.open("POST", "http://localhost:3000/", true);
+            r.setRequestHeader('Content-Type', 'application/json');
+
+            r.onreadystatechange = function () {
+              if (r.readyState !== 4) {
+                return;
+              }
+
+              switch (r.status) {
+                case 200:
+                  contributionField.value = '';
+                  break;
+                case 403:
+                  $(sendButton).popover({
+                    title: "C'est pas ouvert :(",
+                    content: "Les contributions ne sont pas ouvertures pour le moment."
+                  });
+                  break;
+                case 429:
+                  $(sendButton).popover({
+                    title: "Pas si vite !",
+                    content: "Un message seulement toutes les minutes ! Patientez un peu."
+                  }).popover('show');
+                  break;
+                default:
+                  $(sendButton).popover({
+                    title: "Erreur inconnue",
+                    content: "Aucune idée de ce qui s'est passé !? Essayez un peu plus tard."
+                  }).popover('show');
+              }
+
+              sendButton.disabled = false;
+              sendButton.textContent = 'Contribuer';
+            };
+
+            r.send(JSON.stringify(message));
+        }
+
+        function addHashtag(e) {
+            var cursorPos = $(contributionField).prop('selectionStart');
+            var v = contributionField.value;
+            var textBefore = v.substring(0, cursorPos);
+            var textAfter = v.substring(cursorPos, v.length);
+            var additionalChars = 1;
+            if(textBefore[textBefore.length -1] !== '') { textBefore += ' '; additionalChars++; }
+            if(textAfter[0] !== ' ') { textAfter = ' ' + textAfter; additionalChars++; }
+            contributionField.value = textBefore + '#' + e.currentTarget.dataset.tag + textAfter;
+            var newCursor = cursorPos + e.currentTarget.dataset.tag.length + additionalChars;
+            contributionField.selectionStart = newCursor;
+            contributionField.selectionEnd = newCursor;
+        }
+
+        function preventLosingFocus(e) {
+          e.preventDefault();
+        }
+
+        function createHashTagButton(tag) {
+          var button = document.createElement('button');
+          button.className = "btn btn-info hashtag form-control";
+          button.textContent = button.dataset.tag = tag;
+          hashtagContainer.append(button);
+          button.addEventListener('click', addHashtag);
+          button.addEventListener('mousedown', preventLosingFocus);
+          hashtagButtons[tag] = button;
+         }
+
+        function setUpHashtagButtons() {
+          for(var i = 0; i < tags.length; i++) {
+            createHashTagButton(tags[i])
+          }
+        }
+
+        var uuidRegExp = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/;
+        var contributerId = window.localStorage.getItem('contributerId');
+        if (contributerId === null || !uuidRegExp.exec(contributerId)) {
+          contributerId = uuidv4();
+          window.localStorage.setItem('contributerId', contributerId);
+        }
+
+        var contributionField = document.getElementById('contribution');
+        var prenomField = document.getElementById('prenom');
+        prenomField.value = localStorage.getItem('prenom') || '';
+
+        var sendButton = document.getElementById("envoyer");
+
+        document.addEventListener('click', hidePopovers);
+        sendButton.addEventListener('click', sendContribution);
+        prenomField.addEventListener('change', saveFirstName);
+
+        var tags = [{% for hashtag in site.data.hashtags.tags %}'{{ hashtag }}',{% endfor %}];
+        var compulsory = {{ site.data.hashtags.compulsory }};
+        var hashtagContainer = document.getElementById('hashtag-container');
+        var hashtagButtons = {};
+
+        setUpHashtagButtons();
+
+    </script>
+    <style>.hashtag + .hashtag { margin-left: 5px;}</style>
+
     <h3>En direct</h3>
     <div class="row">
       <div style="max-height: 1500px; border-left: 1px solid #DDD; overflow:auto; padding-top: 10px;" id="direct">

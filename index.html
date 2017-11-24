@@ -30,7 +30,7 @@ subject: Convention législatives
         <div class="col-md-6 bottom-margin"><a target="_blank" class="btn btn-lg btn-block" style="background-color:#4099FF;color: white;" href="https://twitter.com/intent/tweet?original_referer=https%3A%2F%2Fpublish.twitter.com%2F&ref_src=twsrc%5Etfw&related=franceinsoumise&text=Samedi%2025%20et%20dimanche%2026%20novembre%2C%20suivez%20en%20direct%20la%20troisième%20convention%20de%20la%20%40franceinsoumise.%20%23ConventionFi&tw_p=tweetbutton&url=https%3A%2F%2Fevenements.lafranceinsoumise.fr">PARTAGER SUR TWITTER</a></div>
       <br/><br/>
     </div>
-    <div id="participation" style="display: {% if site.data.hashtags.enabled %}block{% else %}none{%endif%};">
+    <div id="participation" style="display: {% if site.data.contributions.enabled %}block{% else %}none{%endif%};">
       <h3>Je participe&nbsp;!</h3>
 
       <div class="row">
@@ -145,13 +145,13 @@ subject: Convention législatives
         function refreshConfig() {
           var r = new XMLHttpRequest();
 
-          r.open("GET", '/data/hashtags.json', true);
+          r.open("GET", '/data/contributions.json', true);
           r.onreadystatechange = function(e) {
             if (this.readyState === 4) {
               if (this.status === 200) {
                 try {
-                  config = JSON.parse(this.responseText);
-                  refreshInterface();
+                  var config = JSON.parse(this.responseText);
+                  refreshInterface(config);
                 } catch(e) {
                   console.error("Config parsing error: ", e);
                 }
@@ -163,7 +163,8 @@ subject: Convention législatives
           r.send(null);
         }
 
-        function refreshInterface() {
+        function refreshInterface(newConfig) {
+          config = newConfig;
           contributionDiv.style.display = config.enabled ? 'block' : 'none';
           setUpHashtagButtons();
         }
@@ -184,6 +185,16 @@ subject: Convention législatives
 
         function preventLosingFocus(e) {
           e.preventDefault();
+        }
+
+        function getQueryParameterByName(name) {
+          var url = window.location.href;
+          name = name.replace(/[\[\]]/g, "\\$&");
+          var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                  results = regex.exec(url);
+          if (!results) return null;
+          if (!results[2]) return '';
+          return decodeURIComponent(results[2].replace(/\+/g, " "));
         }
 
         function createHashTagButton(tag) {
@@ -233,20 +244,21 @@ subject: Convention législatives
         prenomField.addEventListener('change', saveFirstName);
 
         var config = {
-          endpoint: "{{ site.data.hashtags.endpoint }}",
-          enabled: {{ site.data.hashtags.enabled }},
-          tags: [{% for hashtag in site.data.hashtags.tags %}'{{ hashtag }}',{% endfor %}],
-          compulsory: {{ site.data.hashtags.compulsory }}
+          endpoint: "{{ site.data.contributions.endpoint }}",
+          enabled: {{ site.data.contributions.enabled }},
+          tags: [{% for hashtag in site.data.contributions.tags %}'{{ hashtag }}',{% endfor %}],
+          compulsory: {{ site.data.contributions.compulsory }}
         };
 
         var hashtagContainer = document.getElementById('hashtag-container');
         var hashtagButtons = {};
 
         setUpHashtagButtons();
-        setInterval(refreshConfig, 45 * 1000);
+        if(!getQueryParameterByName('donotrefresh')) {
+          setInterval(refreshConfig, 45 * 1000);
+         }
 
     </script>
-    <!-- {{ site.data.hashtags }} -->
     <style>.hashtag + .hashtag { margin-left: 5px;}</style>
 
     <h3>En direct</h3>

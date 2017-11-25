@@ -22,6 +22,7 @@ subject: Convention législatives
       Le samedi 25 et dimanche 26 novembre, la France insoumise organise sa troisième Convention. Suivez cet événement
       en direct et participez-y sur notre site&nbsp;!
     </p>
+
     <iframe width="1280" height="720" src="https://www.youtube.com/embed/0-j2zGnZWJI?rel=0" frameborder="0" allowfullscreen></iframe>
     <div class="row">
       <p>
@@ -32,6 +33,10 @@ subject: Convention législatives
     </div>
     <div id="participation" style="display: {% if site.data.contributions.enabled %}block{% else %}none{%endif%};">
       <h3>Je participe&nbsp;!</h3>
+
+      <div>
+        <p id="contribution-intro">{{ site.data.contributions.intro }}</p>
+      </div>
 
       <div class="row">
         <div class="col-md-8">
@@ -57,6 +62,17 @@ subject: Convention législatives
         <div class="form-group" id="hashtag-container" data-toggle="popover" title="Choisissez au moins un thème"
        data-content="Ajoutez le hashtag avec un des boutons." data-trigger="manual" data-container="body"></div>
       </div>
+
+      <div id="contribution-form-link">
+      {% if site.data.contributions.form  %}
+        <p>
+            <a class="btn btn-block btn-primary btn-lg" href="{{ site.data.contributions.form.link }}">
+              {{ site.data.contributions.form.title }}
+            </a>
+        </p>
+      {% endif %}
+      </div>
+
     </div>
 
     <script>
@@ -164,9 +180,46 @@ subject: Convention législatives
         }
 
         function refreshInterface(newConfig) {
+          if (newConfig.interfaceVersion > config.interfaceVersion) {
+            window.location.reload(true);
+            return;
+          }
           config = newConfig;
           contributionDiv.style.display = config.enabled ? 'block' : 'none';
           setUpHashtagButtons();
+          changeIntroText();
+          refreshFormButton();
+        }
+
+        function changeIntroText() {
+            introElement.textContent = config.intro;
+        }
+
+        function refreshFormButton() {
+          if (!config.form) {
+            while(contributionFormLinkContainer.firstChild) {
+              contributionFormLinkContainer.removeChild(contributionFormLinkContainer.firstChild)
+            }
+            return;
+          }
+
+          var paragraph = contributionFormLinkContainer.firstElementChild;
+
+          if (!paragraph) {
+            paragraph = document.createElement('p');
+            contributionFormLinkContainer.append(paragraph);
+          }
+
+          var link = paragraph.firstElementChild;
+
+          if(!link) {
+            link = document.createElement('a');
+            paragraph.append(link);
+          }
+
+          link.className = 'btn btn-block btn-primary btn-lg';
+          link.textContent = config.form.title;
+          link.href = config.form.link;
         }
 
         function addHashtag(e) {
@@ -239,23 +292,21 @@ subject: Convention législatives
 
         var sendButton = document.getElementById("envoyer");
 
+        var introElement = document.getElementById("contribution-intro");
+        var contributionFormLinkContainer = document.getElementById("contribution-form-link");
+
         document.addEventListener('click', hidePopovers);
         sendButton.addEventListener('click', sendContribution);
         prenomField.addEventListener('change', saveFirstName);
 
-        var config = {
-          endpoint: "{{ site.data.contributions.endpoint }}",
-          enabled: {{ site.data.contributions.enabled }},
-          tags: [{% for hashtag in site.data.contributions.tags %}'{{ hashtag }}',{% endfor %}],
-          compulsory: {{ site.data.contributions.compulsory }}
-        };
+        var config = {{ site.data.contributions | json }};
 
         var hashtagContainer = document.getElementById('hashtag-container');
         var hashtagButtons = {};
 
         setUpHashtagButtons();
         if(!getQueryParameterByName('donotrefresh')) {
-          setInterval(refreshConfig, 45 * 1000);
+          setInterval(refreshConfig, config.refreshInterval * 1000);
          }
 
     </script>

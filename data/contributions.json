@@ -3,7 +3,7 @@
   "refreshInterval": 45,
   "endpoint": "https://live.lafranceinsoumise.fr",
   "intro": "Vous pouvez poster une contribution courte aux débats en utilisant le formulaire ci-dessous.",
-  "enabled": true,
+  "enabled": false,
   "tags": [],
   "compulsory": false,
   "form": null

@@ -299,7 +299,7 @@ subject: Convention législatives
         sendButton.addEventListener('click', sendContribution);
         prenomField.addEventListener('change', saveFirstName);
 
-        var config = {{ site.data.contributions | json }};
+        var config = {{ site.data.contributions | jsonify }};
 
         var hashtagContainer = document.getElementById('hashtag-container');
         var hashtagButtons = {};

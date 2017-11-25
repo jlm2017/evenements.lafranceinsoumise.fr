@@ -1,5 +1,5 @@
 {
-  "interfaceVersion": 1,
+  "interfaceVersion": 2,
   "refreshInterval": 45,
   "endpoint": "https://live.lafranceinsoumise.fr",
   "intro": "Vous pouvez poster une contribution courte, ou participer aux cogitations en cliquant sur le bouton sous le formulaire.",

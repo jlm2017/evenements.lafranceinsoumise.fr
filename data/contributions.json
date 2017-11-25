@@ -2,8 +2,8 @@
   "interfaceVersion": 2,
   "refreshInterval": 45,
   "endpoint": "https://live.lafranceinsoumise.fr",
-  "intro": "Vous pouvez poster une contribution courte, ou participer aux cogitations en cliquant sur le bouton sous le formulaire.",
-  "enabled": false,
+  "intro": "Vous pouvez poster une contribution courte aux débats en utilisant le formulaire ci-dessous.",
+  "enabled": true,
   "tags": [],
   "compulsory": false,
   "form": null

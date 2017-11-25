@@ -228,7 +228,7 @@ subject: Convention législatives
             var textBefore = v.substring(0, cursorPos);
             var textAfter = v.substring(cursorPos, v.length);
             var additionalChars = 1;
-            if(textBefore[textBefore.length -1] !== '') { textBefore += ' '; additionalChars++; }
+            if(textBefore[textBefore.length -1] !== ' ') { textBefore += ' '; additionalChars++; }
             if(textAfter[0] !== ' ') { textAfter = ' ' + textAfter; additionalChars++; }
             contributionField.value = textBefore + '#' + e.currentTarget.dataset.tag + textAfter;
             var newCursor = cursorPos + e.currentTarget.dataset.tag.length + additionalChars;
@@ -253,7 +253,8 @@ subject: Convention législatives
         function createHashTagButton(tag) {
           var button = document.createElement('button');
           button.className = "btn btn-info hashtag form-control";
-          button.textContent = button.dataset.tag = tag;
+          button.dataset.tag = tag;
+          button.textContent = '#' + tag;
           hashtagContainer.append(button);
           button.addEventListener('click', addHashtag);
           button.addEventListener('mousedown', preventLosingFocus);

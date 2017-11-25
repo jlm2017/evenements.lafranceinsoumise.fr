@@ -2,9 +2,12 @@
   "interfaceVersion": 2,
   "refreshInterval": 45,
   "endpoint": "https://live.lafranceinsoumise.fr",
-  "intro": "Vous pouvez poster une contribution courte aux débats en utilisant le formulaire ci-dessous.",
+  "intro": "La première cogitation est ouverte ! Participez en cliquant sur le bouton situé sous le formulaire.",
   "enabled": true,
   "tags": ["pauvrete", "nucleaire", "fraudefiscale"],
   "compulsory": true,
-  "form": null
+  "form": {
+    "title": "Je participate à la première cogitation : le constat",
+    "link": "https://docs.google.com/forms/d/e/1FAIpQLSfaeD4pguwXEfUWywm9B0WpVU1PtNeG3H3rGDJmDjRM8MpccA/viewform?usp=sf_link"
+  }
 }

@@ -1,9 +1,13 @@
+- time: "10:10"
+  content: |
+    Les insoumis présentent leurs contributions.
+  image: photos/08_59.jpg
+
 - time: "9:41"
   content: |
     William Martinet et Leila Chaibi posent les bases de l’auto organisation pour « remplir un objectif prioritaire : ramener les dégoûtés de la politique dans la lutte »
   image: photos/D09_41.jpg
   img_full_width: true
-
 
 - time: "9:38"
   content: |
